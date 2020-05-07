@@ -148,6 +148,8 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
 
 void matchBoundingBoxes(std::vector<cv::DMatch> &matches, std::map<int, int> &bbBestMatches, DataFrame &prevFrame, DataFrame &currFrame)
 {
+    std::map<std::pair<int, int>, int> matches_count;
+
     for (const auto &match : matches)
     {
         const auto &prev_pt = prevFrame.keypoints[match.queryIdx].pt;
@@ -167,7 +169,21 @@ void matchBoundingBoxes(std::vector<cv::DMatch> &matches, std::map<int, int> &bb
         // only take points that are inside exactly one boundingbox and the matched point is also
         // in exactly one boundingbox
 
-        if(curr_bb.size() == 1 && prev_bb.size() == 1)
-            bbBestMatches[prev_bb[0]] = curr_bb[0];
+        if (curr_bb.size() == 1 && prev_bb.size() == 1)
+        {
+            matches_count[{prev_bb[0], curr_bb[0]}]++;
+        }
+    }
+
+    for (auto &tmp : matches_count)
+    {
+        if (bbBestMatches.count(tmp.first.first) == 0)
+            bbBestMatches[tmp.first.first] = tmp.first.second;
+        else if (
+            matches_count[{tmp.first.first, bbBestMatches[tmp.first.first]}] <
+            matches_count[{tmp.first.first,tmp.first.second}])
+        {
+            bbBestMatches[tmp.first.first] = tmp.first.second;
+        }
     }
 }
