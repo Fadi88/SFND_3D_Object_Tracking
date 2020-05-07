@@ -143,7 +143,22 @@ void computeTTCCamera(std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPo
 void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
                      std::vector<LidarPoint> &lidarPointsCurr, double frameRate, double &TTC)
 {
-    // ...
+    std::vector<double> curr_distances{}, prev_distances{};
+
+    std::transform(lidarPointsPrev.cbegin(), lidarPointsPrev.cend(), std::back_inserter(prev_distances),
+                   [](const LidarPoint &ld_pt) { return ld_pt.x; });
+
+    std::transform(lidarPointsCurr.cbegin(), lidarPointsCurr.cend(), std::back_inserter(curr_distances),
+                   [](const LidarPoint &ld_pt) { return ld_pt.x; });
+
+    std::sort(curr_distances.begin(), curr_distances.end());
+    std::sort(prev_distances.begin(), prev_distances.end());
+
+    // ignoring first 5 smallest points
+    double prev_min_distance = prev_distances[10];
+    double curr_min_distance = curr_distances[10];
+
+    TTC = curr_min_distance / (frameRate * (prev_min_distance - curr_min_distance));
 }
 
 void matchBoundingBoxes(std::vector<cv::DMatch> &matches, std::map<int, int> &bbBestMatches, DataFrame &prevFrame, DataFrame &currFrame)
@@ -175,21 +190,23 @@ void matchBoundingBoxes(std::vector<cv::DMatch> &matches, std::map<int, int> &bb
         {
             for (const auto &bb : currFrame.boundingBoxes)
             {
-                if (bb.boxID == curr_bb[0]){
+                if (bb.boxID == curr_bb[0])
+                {
                     current_class_id = bb.classID;
                     break;
                 }
             }
             for (const auto &bb : prevFrame.boundingBoxes)
             {
-                if (bb.boxID == prev_bb[0]){
+                if (bb.boxID == prev_bb[0])
+                {
                     prev_class_id = bb.classID;
                     break;
                 }
             }
             // also filtering for same type of objects
             // to avoid for example matching a car and a truck
-            if(current_class_id == prev_class_id)
+            if (current_class_id == prev_class_id)
                 matches_count[{prev_bb[0], curr_bb[0]}]++;
         }
     }
