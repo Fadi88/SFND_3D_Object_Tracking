@@ -169,19 +169,44 @@ void matchBoundingBoxes(std::vector<cv::DMatch> &matches, std::map<int, int> &bb
         // only take points that are inside exactly one boundingbox and the matched point is also
         // in exactly one boundingbox
 
+        int current_class_id, prev_class_id;
+
         if (curr_bb.size() == 1 && prev_bb.size() == 1)
         {
-            matches_count[{prev_bb[0], curr_bb[0]}]++;
+            for (const auto &bb : currFrame.boundingBoxes)
+            {
+                if (bb.boxID == curr_bb[0]){
+                    current_class_id = bb.classID;
+                    break;
+                }
+            }
+            for (const auto &bb : prevFrame.boundingBoxes)
+            {
+                if (bb.boxID == prev_bb[0]){
+                    prev_class_id = bb.classID;
+                    break;
+                }
+            }
+            // also filtering for same type of objects
+            // to avoid for example matching a car and a truck
+            if(current_class_id == prev_class_id)
+                matches_count[{prev_bb[0], curr_bb[0]}]++;
         }
     }
 
     for (auto &tmp : matches_count)
     {
+        // ignore matches that has less than 8 matching keypoints
+        if (tmp.second < 8)
+            continue;
+
         if (bbBestMatches.count(tmp.first.first) == 0)
+        {
             bbBestMatches[tmp.first.first] = tmp.first.second;
+        }
         else if (
             matches_count[{tmp.first.first, bbBestMatches[tmp.first.first]}] <
-            matches_count[{tmp.first.first,tmp.first.second}])
+            matches_count[{tmp.first.first, tmp.first.second}])
         {
             bbBestMatches[tmp.first.first] = tmp.first.second;
         }
