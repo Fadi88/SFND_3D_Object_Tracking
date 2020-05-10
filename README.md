@@ -41,7 +41,7 @@ In this final project, you will implement the missing parts in the schematic. To
 there were some jumps in the TTC calcauted by the LIDAR even when trying the drop the first X values and take average of the first Y values after the drop.
 Main reason is the the time step is really small and even the smallest change in distance will impact the time greatly.
 
-Suggest improvmenet : 3 point average for filter the signals before sending the TTC, or some baysian filtering (ie. Kalman)
+Suggested improvmenet : 3 point average for filter the signals before sending the TTC, or some baysian filtering (ie. Kalman)
 
 ### FP.6
 
