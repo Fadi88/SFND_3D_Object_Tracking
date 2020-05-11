@@ -109,7 +109,7 @@ int main(int argc, const char *argv[])
     bool bVis = true;                             // visualize results
 
     string detectorType = "SHITOMASI"; // -> SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
-    string descriptorType = "BRISK";   // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
+    string descriptorType = "ORB";   // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
 
     // log file
     std::ofstream logger(std::string{"../logs/"} + detectorType + "_" + descriptorType + ".log");
