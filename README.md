@@ -45,3 +45,10 @@ Suggested improvmenet : 3 point average for filter the signals before sending th
 
 ### FP.6
 
+comparsion was done on selected sample based on the recommendation done in the previous project, the results however suggest to change the recommendation from the previous findings.
+
+first major observation is that the descriptor extraction algorthim doesnt have a major influence on the TTC it is the detector that plays a major roles.
+
+the recommendation from the previous project focused mainly on FAST because its speed however what was found durning this project is that the TTC calculated had a lot of noise and fluctuations.
+while shi-thomasi had a more stable TTC result 
+<img src="logs/Screenshot from 2020-05-11 12-51-08.png" > 
